@@ -8,10 +8,33 @@
 
 using namespace std;
 
+//enum Bool { False, True };
+//typedef uint8_t Bool;
+
+#define NHAP_DIEM(mon_hoc, diem)                \
+    do                                          \
+    {                                           \
+        printf("Nhap diem %s: ", mon_hoc);      \
+        scanf("%lf", &sv.diem);                 \
+    } while (Check(sv.diem, mon_hoc) != 1);     \
+
+#define NHAP_GIOITINH(GioiTinh)\
+    do                                              \
+    {                                               \
+        printf("Nhap gioi tinh: ");                 \
+        scanf("%s", sv.GioiTinh);                   \
+    } while (Check_GioiTinh(sv.GioiTinh) != 1);
+    
+#define NHAP_TEN(Ten)                           \
+    printf("Nhap ten: ");                       \
+    scanf("%s", sv.Ten);
+
 class SinhVien {
+        
     public:
         SinhVien();
         uint8_t ID;
+
         char TEN[20];
         char GIOI_TINH[4];
         uint8_t TUOI;
@@ -32,6 +55,8 @@ SinhVien::SinhVien () {
 }
 
 class Menu {
+    private:
+        uint8_t Check (double diem, char *ten);
     public:
         Menu();
         
@@ -44,7 +69,7 @@ class Menu {
         void HienThiDanhSach();
 };
 vector<SinhVien> Database;
-
+/*Menu*/
 Menu::Menu(){
     int Key;  //Khoi tao phim nhan
     int id;
@@ -131,16 +156,16 @@ Menu::Menu(){
     case 5://Sap xep sinh vien theo diem trung binh GPA
         if (Database.size()>0)
         {
-            printf("Sap xep sinh vien theo diem GPA");
+            printf("Sap xep sinh vien theo diem GPA\n");
             SapXepSinhVienTheoGPA();
             HienThiDanhSach();
-            printf("Nhan 0 de quay lai menu ");
+            printf("Nhan 0 de quay lai menu\n ");
             scanf("%d", &Key);
             goto menu;
         }else
         {
             printf("Danh sach trong\n");
-            printf("Nhan 0 de quay lai menu ");
+            printf("Nhan 0 de quay lai menu\n ");
             scanf("%d", &Key);
             goto menu;
         }
@@ -182,6 +207,34 @@ Menu::Menu(){
         break;
     }
 }
+/*Ham check diem*/
+uint8_t Menu::Check(double DIEM, char *ten){
+    if (DIEM <= 10) 
+    {
+        return 1;
+    }else
+    {
+        printf("Diem %s khong hop le, vui long nhap lai\n", ten);
+        return 0;
+    }
+    
+}
+/*Ham check gioi tinh*/
+uint8_t Check_GioiTinh(char *GioiTinh)
+{
+    char str[]="nam";
+    char str2[]="nu";
+    if(strstr(strupr(GioiTinh), strupr(str)) || strstr(strupr(GioiTinh), strupr(str2)))
+    {
+        return 1;
+    }
+    else
+    {
+        printf("Gioi tinh %s khong hop le, vui long nhap lai\n", GioiTinh);
+        return 0;
+        
+    }
+}
 /*Ham tinh diem TB*/
 void Diem_TB(SV &sv)
 {
@@ -203,20 +256,13 @@ void Xep_Loai(SV &sv)
 void Menu::ThemSinhVien(){
     SinhVien sv;
     printf("Them sinh vien: \n");
-    printf("Nhap ten sinh vien: ");
-    scanf("%s", sv.TEN);
-
-    printf("Gioitinh: ");
-    scanf("%s", sv.GIOI_TINH);
-
-    printf("Nhap diem toan: ");
-    scanf("%lf", &sv.DIEM_TOAN);
-
-    printf("Nhap diem ly: ");
-    scanf("%lf", &sv.DIEM_LY);
-
-    printf("Nhap diem hoa: ");
-    scanf("%lf", &sv.DIEM_HOA);
+    
+    NHAP_TEN(TEN);
+    NHAP_GIOITINH(GIOI_TINH);
+ 
+    NHAP_DIEM("Toan", DIEM_TOAN);
+    NHAP_DIEM("Ly", DIEM_LY);
+    NHAP_DIEM("Hoa", DIEM_HOA);
 
     Diem_TB(sv);
     Xep_Loai(sv);
@@ -227,37 +273,42 @@ void Menu::ThemSinhVien(){
 void Menu::CapNhatThongTin(int id)
 {
     SinhVien sv;
-    
-    //printf("Nhap ID can cap nhat thong tin: ");
+    uint8_t Find = 0;
+
     for (uint8_t i = 0; i < Database.size(); i++)
     { 
         
         if (Database[i].ID == id)
         {
+            NHAP_TEN(TEN);
+            NHAP_GIOITINH(GIOI_TINH);
+ 
+            NHAP_DIEM("Toan", DIEM_TOAN);
+            NHAP_DIEM("Ly", DIEM_LY);
+            NHAP_DIEM("Hoa", DIEM_HOA);
             
-            printf("Nhap ten sinh vien: ");
-            scanf("%d", Database[i].TEN);
+            Diem_TB(sv);
+            Xep_Loai(sv);
 
-            printf("Gioitinh: ");
-            scanf("%s", Database[i].GIOI_TINH);
-
-            printf("Nhap diem toan: ");
-            scanf("%lf", &Database[i].DIEM_TOAN);
-
-            printf("Nhap diem ly: ");
-            scanf("%lf", &Database[i].DIEM_LY);
-
-            printf("Nhap diem hoa: ");
-            scanf("%lf", &Database[i].DIEM_HOA);
+            //Database.push_back(Database[i]);
+            
+            
+            Database.erase(Database.begin() + i);
+            Database.insert(Database.begin() + i, sv);
 
             
-
-            Diem_TB(Database[i]);
-            Xep_Loai(Database[i]);
+            Database[i].ID = i+1;
+            //Database.push_back(sv); 
+            Find = 1;
+            break;
         }
-        else
-            printf("Sinh vien co ID %d khong ton tai", id);
+        
+    }   
+    if (Find == 0)
+    {
+        printf("Sinh vien co ID %d khong ton tai\n", id);
     }
+    
 }
 /*Ham xoa sinh vien theo ID*/
 void Menu::XoaSinhVien(int id){
@@ -280,17 +331,30 @@ void Menu::TimKiemSinhVien(char Ten_can_tim[]){
        
         strcpy(tenSV, Database[i].TEN);
         if(strstr(strupr(tenSV), strupr(Ten_can_tim))) {
-            printf("Sinh Vien %d:\n", i+1);
-            printf("Ten Sinh Vien: %s\n", Database[i].TEN);
-            printf("Gioi Tinh: %s\n", Database[i].GIOI_TINH);
+            // printf("Sinh Vien %d:\n", i+1);
+            // printf("Ten Sinh Vien: %s\n", Database[i].TEN);
+            // printf("Gioi Tinh: %s\n", Database[i].GIOI_TINH);
 
-            printf("Diem Toan: %0.2f\n", Database[i].DIEM_TOAN);
-            printf("Diem Ly: %0.2f\n", Database[i].DIEM_LY);
-            printf("Diem Hoa: %0.2f\n", Database[i].DIEM_HOA);
+            // printf("Diem Toan: %0.2f\n", Database[i].DIEM_TOAN);
+            // printf("Diem Ly: %0.2f\n", Database[i].DIEM_LY);
+            // printf("Diem Hoa: %0.2f\n", Database[i].DIEM_HOA);
 
-            printf("Diem Trung Binh: %0.2f\n", Database[i].DIEM_TRUNG_BINH);
+            // printf("Diem Trung Binh: %0.2f\n", Database[i].DIEM_TRUNG_BINH);
 
-            printf("Hoc Luc: %s\n", Database[i].HOC_LUC);
+            // printf("Hoc Luc: %s\n", Database[i].HOC_LUC);
+            printf("ID\tTen\tGioi Tinh\tDiem Toan\tDiem Ly\t\tDiem Hoa\tDiem Trung Binh\t\tHoc Luc\n");
+            printf("%d\t",Database[i].ID);
+            //printf("%d\t", i+1);
+            printf("%s\t", Database[i].TEN);
+            printf("%s\t\t", Database[i].GIOI_TINH);
+
+            printf("%0.2f\t\t", Database[i].DIEM_TOAN);
+            printf("%0.2f\t\t", Database[i].DIEM_LY);
+            printf("%0.2f\t\t", Database[i].DIEM_HOA);
+
+            printf("%0.2f\t\t\t", Database[i].DIEM_TRUNG_BINH);
+
+            printf("%s\n", Database[i].HOC_LUC);
             find =1;
         } 
   
@@ -317,6 +381,7 @@ void Menu::SapXepSinhVienTheoGPA()
             }  
         } 
     }
+    //HienThiDanhSach();
 }
 /*Ham sap xep sinh vien theo ten */
 void Menu::SapXepSinhVienTheoTen(){
@@ -334,28 +399,31 @@ void Menu::SapXepSinhVienTheoTen(){
             }
         }
     }
+    HienThiDanhSach();
 }
 /*Ham hien thi danh sach sinh vien*/
+/*Ham dung hien thi cho cac ham khac*/
 void Menu::HienThiDanhSach(){
     //system("clear");
-    
+    printf("ID\tTen\tGioi Tinh\tDiem Toan\tDiem Ly\t\tDiem Hoa\tDiem Trung Binh\t\tHoc Luc\n");
     for (uint8_t i = 0; i < Database.size(); i++)
     {
-        printf("Sinh Vien %d:\n", i+1);
-        printf("Ten Sinh Vien: %s\n", Database[i].TEN);
-        printf("Gioi Tinh: %s\n", Database[i].GIOI_TINH);
+       
+        printf("%d\t",Database[i].ID);
+        //printf("%d\t", i+1);
+        printf("%s\t", Database[i].TEN);
+        printf("%s\t\t", Database[i].GIOI_TINH);
 
-        printf("Diem Toan: %0.2f\n", Database[i].DIEM_TOAN);
-        printf("Diem Ly: %0.2f\n", Database[i].DIEM_LY);
-        printf("Diem Hoa: %0.2f\n", Database[i].DIEM_HOA);
+        printf("%0.2f\t\t", Database[i].DIEM_TOAN);
+        printf("%0.2f\t\t", Database[i].DIEM_LY);
+        printf("%0.2f\t\t", Database[i].DIEM_HOA);
 
-        printf("Diem Trung Binh: %0.2f\n", Database[i].DIEM_TRUNG_BINH);
+        printf("%0.2f\t\t\t", Database[i].DIEM_TRUNG_BINH);
 
-        printf("Hoc Luc: %s\n", Database[i].HOC_LUC);
+        printf("%s\n", Database[i].HOC_LUC);
        
     }
 }
-
 
 
 int main(int argc, char const *argv[])
