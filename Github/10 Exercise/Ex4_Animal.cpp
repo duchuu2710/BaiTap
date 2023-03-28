@@ -231,7 +231,7 @@ bool Calculator::checkExist(int id){
         }
     }
 }
-
+//tim vi tri cua id trong danh sach
 int Calculator::checkPosition(int id){
     int position;
     for (uint8_t i = 0; i < database.size(); i++)
