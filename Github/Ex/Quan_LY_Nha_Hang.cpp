@@ -185,18 +185,19 @@ Display::Display(){
             goto Home;
             break;
     }
-}
+} 
 
-// bool Check(Thuc_Don g){
-//     if (g.GIA > 1000)
-//         return true;
-//     else
-//     {
-//         printf("Nhap gia khong hop le, vui long nhap lai\n");
-//         return false;
-//     }
+
+ bool Check(Thuc_Don g){
+    if (g.GIA > 1000)
+        return true;
+    else
+    {
+        printf("Nhap gia khong hop le, vui long nhap lai\n");
+        return false;
+    }
     
-// }
+}
 
 void Nhap_Gia(Thuc_Don *TD){
     printf("Nhap gia: ");
